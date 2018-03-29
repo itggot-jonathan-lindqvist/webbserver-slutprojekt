@@ -1,7 +1,12 @@
+require_relative './model/module'
+
 class App < Sinatra::Base
 
 	enable :sessions
+	include TodoDB
+
 	get '/' do
+		session[:logged_in] = false
 		slim :index
 	end
 
@@ -10,7 +15,6 @@ class App < Sinatra::Base
 	end
 
 	post '/register' do
-		db = SQLite3::Database.new('./db/db-shitchat.sqlite')
 		username = params[:username]
 		password1 = params[:pw1]
 		password2 = params[:pw2]
@@ -20,14 +24,14 @@ class App < Sinatra::Base
 			redirect('/register')
 		end 
 
-		username_compare = db.execute("SELECT * FROM users WHERE username =?",[username])
+		username_compare = user_compare(username)
 		
 		if username_compare.empty? == false
 			session[:invaild_username] = true
 			redirect('/register')
 		end
 		crypt = BCrypt::Password.create(password1)
-		db.execute("INSERT INTO users('username','password','user_value') VALUES(?,?,?)" , [username,crypt],1)
+		create_user(username, crypt)
 		redirect('/')
         
 	end
@@ -36,11 +40,11 @@ class App < Sinatra::Base
 		username = params[:username]
 		password = params[:password]
 
-		db = SQLite3::Database.new('./db/db-shitchat.sqlite')
-
 		session[:username] = username
 
-		check = db.execute("SELECT password FROM users WHERE username=?",[username]).first.first
+		check = get_password_for_user(username)
+		p check
+		check = check[1]
 		p check
 		crypt = BCrypt::Password.new(check)
 
@@ -52,6 +56,10 @@ class App < Sinatra::Base
 			redirect '/'
 		end
 		
+	end
+
+	get '/home' do
+		slim :home
 	end
 
 end           
