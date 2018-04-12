@@ -1,5 +1,11 @@
 require_relative './model/module'
 
+require 'sinatra'
+require 'sinatra-websocket'
+
+set :server, 'thin'
+set :sockets, []
+
 class App < Sinatra::Base
 
 	enable :sessions
@@ -12,6 +18,11 @@ class App < Sinatra::Base
 
 	get '/register' do
 		slim :register
+	end
+
+	get '/messages' do
+		messages = get_message
+		slim :messages, locals:{}, layout: false
 	end
 
 	post '/register' do
@@ -59,7 +70,23 @@ class App < Sinatra::Base
 	end
 
 	get '/home' do
-		slim :home
+		if !request.websocket?
+			slim :home
+		  else
+			request.websocket do |ws|
+			  ws.onopen do
+				ws.send("Hello World!")
+				settings.sockets << ws
+			  end
+			  ws.onmessage do |msg|
+				EM.next_tick { settings.sockets.each{|s| s.send(msg) } }
+			  end
+			  ws.onclose do
+				warn("websocket closed")
+				settings.sockets.delete(ws)
+			  end
+			end
+		end
 	end
 
 end           

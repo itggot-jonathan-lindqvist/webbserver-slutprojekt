@@ -44,64 +44,10 @@ a{
     margin-top: 75px;
 }
 
-/* TEST 
-
-label {
-    width: 50px;
-    height: 5px;
-    border-radius: 5px;
-    background:black;
-    cursor: pointer;
-    transition: .6s;
-    position: fixed;
-    margin-top: 100px;
-  }
-  
-  label:before {
-    content: "";
-    width: 50px;
-    height: 5px;
-    background:black;
-    margin-top: 20px;
-    position: absolute;
-    transform: translateY(-30px);
-    -webkit-transform: translateY(-30px);
-    border-radius: 5px;
-    -webkit-transition: .6s;
-    transition: .6s;
-  }
-  
-  label:after {
-    content: "";
-    width: 50px;
-    margin-top: -20px;
-    height: 5px;
-    background: black;
-    position: absolute;
-    transform: translateY(30px);
-    -webkit-transform: translateY(30px);
-    border-radius: 5px;
-    transition: .6s;
-    -webkit-transition: .6s;
-  }
-  
-  #menu:checked + label {
-    width: 0;
-  }
-  
-  #menu:checked + label:before {
-    transform: rotate(45deg) translate(0px);
-    margin-top: -20px;
-    -webkit-transform: rotate(45deg) translate(0px);
-  }
-  
-  #menu:checked + label:after {
-    transform: rotate(-45deg) translate(0px);
-    margin-top: 20px;
-    -webkit-transform: rotate(-45deg) translate(0px);
-  }
-
-  #menu {
-    visibility: hidden;
-  }
-  
+nav{
+    display: flex;
+    width: 100vw;
+    flex-direction: row;
+    justify-content: space-evenly;
+    font-size: 24px;
+}
