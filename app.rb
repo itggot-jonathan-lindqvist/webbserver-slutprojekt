@@ -1,10 +1,10 @@
 require_relative './model/module'
 
-require 'sinatra'
-require 'sinatra-websocket'
+#require 'sinatra'
+#require 'sinatra-websocket'
 
-set :server, 'thin'
-set :sockets, []
+#set :server, 'thin'
+#set :sockets, []
 
 class App < Sinatra::Base
 
@@ -70,23 +70,33 @@ class App < Sinatra::Base
 	end
 
 	get '/home' do
-		if !request.websocket?
-			slim :home
-		  else
-			request.websocket do |ws|
-			  ws.onopen do
-				ws.send("Hello World!")
-				settings.sockets << ws
-			  end
-			  ws.onmessage do |msg|
-				EM.next_tick { settings.sockets.each{|s| s.send(msg) } }
-			  end
-			  ws.onclose do
-				warn("websocket closed")
-				settings.sockets.delete(ws)
-			  end
-			end
-		end
+		#if !request.websocket?
+		#	slim :home
+		 # else
+			#request.websocket do |ws|
+			 # ws.onopen do
+				#ws.send("Hello World!")
+				#settings.sockets << ws
+			  #end
+			  #ws.onmessage do |msg|
+				#EM.next_tick { settings.sockets.each{|s| s.send(msg) } }
+			  #end
+			  #ws.onclose do
+				#warn("websocket closed")
+				#settings.sockets.delete(ws)
+			  #end
+			#end
+		#end
+	end
+
+	get '/chat/:chat_id' do
+		chat_id = params[:chat_id]
+		messages = get_messages(chat_id)
+		slim :home, locals{messages: messages}, layout: false 
+	end
+
+	post '/home' do
+
 	end
 
 end           

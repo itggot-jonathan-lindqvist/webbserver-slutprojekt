@@ -26,6 +26,12 @@ module TodoDB
         return info
     end
 
+    def get_messages(chat_id)
+        db =db_connect()
+        messages = db.execute("SELECT * FROM Message WHERE chatroom_id=?",[chat_id])
+        return messages
+    end
+
     # def db_connect
     #     db = SQLite3::Database.new(DB_PATH)
     #     db.results_as_hash = true
