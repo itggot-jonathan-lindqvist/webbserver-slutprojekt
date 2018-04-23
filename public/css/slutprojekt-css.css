@@ -51,3 +51,8 @@ nav{
     justify-content: space-evenly;
     font-size: 24px;
 }
+
+.room_links{
+    display: flex;
+    flex-direction: column;
+}

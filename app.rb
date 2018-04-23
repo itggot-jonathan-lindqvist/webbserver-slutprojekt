@@ -20,10 +20,10 @@ class App < Sinatra::Base
 		slim :register
 	end
 
-	get '/messages' do
-		messages = get_message
-		slim :messages, locals:{}, layout: false
-	end
+#	get '/messages' do
+#		messages = get_message
+#		slim :messages, locals:{}, layout: false
+#	end
 
 	post '/register' do
 		username = params[:username]
@@ -54,9 +54,7 @@ class App < Sinatra::Base
 		session[:username] = username
 
 		check = get_password_for_user(username)
-		p check
 		check = check[1]
-		p check
 		crypt = BCrypt::Password.new(check)
 
 		if crypt == password
@@ -87,16 +85,54 @@ class App < Sinatra::Base
 			  #end
 			#end
 		#end
+		slim :home
 	end
 
-	get '/chat/:chat_id' do
-		chat_id = params[:chat_id]
+	get '/chat' do
+		username = session[:username]
+		user_id = get_user_id(username)
+		chatrooms_id = get_chatrooms(user_id)
+		slim :chat, locals:{chatrooms_id:chatrooms_id}
+	end
+
+
+	get '/room/:chat_id' do
+		slim :room
+	end
+
+	get '/messages' do
+		username = session[:username]
+		user_id = get_user_id(username)
+		p user_id
+		chatrooms_id = get_chatrooms(user_id)
+		p chatrooms_id
+		chat_id = chatrooms
 		messages = get_messages(chat_id)
-		slim :home, locals{messages: messages}, layout: false 
+		slim :messages, locals:{messages:messages}, layout: false
+	end    
+	
+	post '/room/:chat_id' do
+		chat_id = params[:chat_id]
+		message = params[:message]
+		username = session[:username]
+		user_id = get_user_id(username)
+		#p user_id
+		insert_message(chat_id, message, user_id)
 	end
 
-	post '/home' do
-
+	get '/adminpowers' do
+		slim :admin
 	end
 
-end           
+	post '/adminpowers' do
+		pw = params[:adminpw]
+
+		if pw == "qvistisagod"
+			username = session[:username]
+			updateUserValue(username)
+			redirect('/home')
+		else
+			redirect('/adminpowers')
+		end
+	end
+end

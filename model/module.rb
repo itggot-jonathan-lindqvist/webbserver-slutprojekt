@@ -27,9 +27,31 @@ module TodoDB
     end
 
     def get_messages(chat_id)
-        db =db_connect()
+        db = db_connect()
         messages = db.execute("SELECT * FROM Message WHERE chatroom_id=?",[chat_id])
         return messages
+    end
+
+    def get_user_id(username)
+        db = db_connect()
+        id = db.execute("SELECT id FROM Users WHERE username is ?",[username])
+        return id[0]["id"]
+    end
+
+    def insert_message(chat_id, message, user_id)
+        db = db_connect()
+        db.execute("INSERT INTO Message('chatroom_id','message','user_id') VALUES(?,?,?)" , [chat_id, message, user_id])
+    end
+
+    def get_chatrooms(user_id)
+        db = db_connect()
+        chatrooms_id = db.execute("SELECT id FROM Chatroom where user_1 OR user_2 =?", [user_id])
+        return chatrooms_id
+    end
+
+    def updateUserValue(username)
+        db = db_connect()
+        db.execute("UPDATE Users SET user_value = 2 WHERE username =?", [username])
     end
 
     # def db_connect

@@ -6,12 +6,14 @@ html lang="en"
         meta http-equiv="X-UA-Compatible" content="ie=edge"/
         title ShitChat
         link rel="stylesheet" type="text/css" href="/css/slutprojekt-css.css"
+        <script src="http://code.jquery.com/jquery-3.1.1.min.js"></script>
+        <script src="/js/jquery.js"></script>
         <link href="https://fonts.googleapis.com/css?family=Palanquin+Dark" rel="stylesheet">
     body
         -if session[:logged_in] == true
             nav
                 a href="/home" Home
-                a href="/chats" Chats
+                a href="/chat" Chats
                 a href="/friends" Friends
                 a href="/profile/:username" = session[:username]
 

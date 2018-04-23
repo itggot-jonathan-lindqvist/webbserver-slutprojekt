@@ -1,0 +1,9 @@
+div class="chat_window" id="chatdiv"
+    <script>
+        $(document).ready(function() {
+            $('#chatdiv').load('messages.slim');
+        });
+    </script>
+form action="/chat" method="POST"
+    input type="text" placeholder="Enter message here" name="message"
+    input type="submit" value="Send"
