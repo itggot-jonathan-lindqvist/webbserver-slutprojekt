@@ -1,0 +1,17 @@
+h2 Search fprjrwke fridns huer :]
+
+form action="/friends" method="POST"
+    input type="search" name="user"
+    input type="submit" value="Search"
+
+div class="sidebyside"
+    div class="users"
+        h2 All users:
+        - all.each do |hash|
+            a href="/friend/#{hash["username"]}" #{hash["username"]}
+
+    - if @result != nil
+        div class="users"
+            h2 Search result:
+            - @result.each do |hash|
+                a href="/friend/#{hash["username"]}" #{hash["username"]}

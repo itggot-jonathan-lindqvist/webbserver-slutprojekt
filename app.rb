@@ -1,11 +1,5 @@
 require_relative './model/module'
 
-#require 'sinatra'
-#require 'sinatra-websocket'
-
-#set :server, 'thin'
-#set :sockets, []
-
 class App < Sinatra::Base
 
 	enable :sessions
@@ -19,11 +13,6 @@ class App < Sinatra::Base
 	get '/register' do
 		slim :register
 	end
-
-#	get '/messages' do
-#		messages = get_message
-#		slim :messages, locals:{}, layout: false
-#	end
 
 	post '/register' do
 		username = params[:username]
@@ -41,8 +30,10 @@ class App < Sinatra::Base
 			session[:invaild_username] = true
 			redirect('/register')
 		end
+
 		crypt = BCrypt::Password.create(password1)
 		create_user(username, crypt)
+
 		redirect('/')
         
 	end
@@ -68,57 +59,51 @@ class App < Sinatra::Base
 	end
 
 	get '/home' do
-		#if !request.websocket?
-		#	slim :home
-		 # else
-			#request.websocket do |ws|
-			 # ws.onopen do
-				#ws.send("Hello World!")
-				#settings.sockets << ws
-			  #end
-			  #ws.onmessage do |msg|
-				#EM.next_tick { settings.sockets.each{|s| s.send(msg) } }
-			  #end
-			  #ws.onclose do
-				#warn("websocket closed")
-				#settings.sockets.delete(ws)
-			  #end
-			#end
-		#end
 		slim :home
 	end
 
 	get '/chat' do
 		username = session[:username]
+
 		user_id = get_user_id(username)
-		chatrooms_id = get_chatrooms(user_id)
-		slim :chat, locals:{chatrooms_id:chatrooms_id}
+		chatrooms_id_and_name = get_chatrooms(user_id)
+
+		slim :chat, locals:{chatrooms_id_and_name:chatrooms_id_and_name}
 	end
 
 
-	get '/room/:chat_id' do
+	get '/room/:chat_id/:room_name' do
+		@forMSG = params[:chat_id]
+		session[:chat_id] = @forMSG
+		p session[:chat_id]
+		p "here2"
+
+		session[:room_name] = params[:room_name]
+
+
 		slim :room
+	end   
+	
+	post '/room' do
+		chat_id = session[:chat_id]
+		chat_id = chat_id.to_i
+		message = params[:message]
+		message = message.to_s
+		username = session[:username]
+
+		user_id = get_user_id(username)
+		insert_message(chat_id, message, user_id)
+
+		redirect("/room/#{session[:chat_id]}/#{session[:room_name]}")
 	end
 
 	get '/messages' do
-		username = session[:username]
-		user_id = get_user_id(username)
-		p user_id
-		chatrooms_id = get_chatrooms(user_id)
-		p chatrooms_id
-		chat_id = chatrooms
+		chat_id = session[:chat_id]
+		chat_id = chat_id.to_i
 		messages = get_messages(chat_id)
-		slim :messages, locals:{messages:messages}, layout: false
-	end    
-	
-	post '/room/:chat_id' do
-		chat_id = params[:chat_id]
-		message = params[:message]
-		username = session[:username]
-		user_id = get_user_id(username)
-		#p user_id
-		insert_message(chat_id, message, user_id)
-	end
+
+		slim :messages, layout: false, locals:{messages:messages}
+	end 
 
 	get '/adminpowers' do
 		slim :admin
@@ -127,12 +112,37 @@ class App < Sinatra::Base
 	post '/adminpowers' do
 		pw = params[:adminpw]
 
-		if pw == "qvistisagod"
+		if pw == "qvistisagod" #maybe fix later
 			username = session[:username]
 			updateUserValue(username)
 			redirect('/home')
 		else
 			redirect('/adminpowers')
 		end
+
 	end
+
+	get '/friends' do
+		all = getAllUsers()
+		user = params['user']
+
+		if user != nil
+			@result = searchUser(user)
+		end
+
+		slim :friends, locals: {all:all}
+	end
+
+	post '/friends' do
+		user = params["user"]
+
+		redirect "/friends?user=#{user}"
+	end
+
+	get '/friend/:name' do
+		friend_name = params[:name]
+		p friend_name
+		slim :friend, locals: {friend_name:friend_name}
+	end
+
 end

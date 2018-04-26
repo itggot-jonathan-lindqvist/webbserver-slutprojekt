@@ -52,7 +52,24 @@ nav{
     font-size: 24px;
 }
 
-.room_links{
+.room_links, .users{
     display: flex;
     flex-direction: column;
+    margin-left: 20px;
+}
+
+.sidebyside{
+    display: flex;
+    flex-direction: row;
+}
+
+.chat_window{
+    color:black;
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+}
+
+.msgrow{
+    color: black;
 }

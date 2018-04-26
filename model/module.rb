@@ -39,19 +39,33 @@ module TodoDB
     end
 
     def insert_message(chat_id, message, user_id)
+        p chat_id
+        p "newest"
         db = db_connect()
-        db.execute("INSERT INTO Message('chatroom_id','message','user_id') VALUES(?,?,?)" , [chat_id, message, user_id])
+        db.execute("INSERT INTO Message('chatroom_id','message','user_id') VALUES(?,?,?)", [chat_id, message, user_id])
     end
 
     def get_chatrooms(user_id)
         db = db_connect()
-        chatrooms_id = db.execute("SELECT id FROM Chatroom where user_1 OR user_2 =?", [user_id])
+        chatrooms_id = db.execute("SELECT id, room_name FROM Chatroom where user_1 OR user_2 =?", [user_id])
         return chatrooms_id
     end
 
     def updateUserValue(username)
         db = db_connect()
         db.execute("UPDATE Users SET user_value = 2 WHERE username =?", [username])
+    end
+
+    def getAllUsers()
+        db = db_connect()
+        allUsers = db.execute("SELECT username FROM Users")
+        return allUsers
+    end
+
+    def searchUser(name)
+        db = db_connect()
+        name = db.execute("SELECT username FROM users WHERE username LIKE ?", "%#{name}%")
+        return name
     end
 
     # def db_connect
