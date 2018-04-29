@@ -141,8 +141,41 @@ class App < Sinatra::Base
 
 	get '/friend/:name' do
 		friend_name = params[:name]
-		p friend_name
+		username = session[:username]
+		@user_value = getUserValue(username)
+
 		slim :friend, locals: {friend_name:friend_name}
+	end
+
+	post '/startchat' do
+		chat_room_name = session[:username] + " & " + params[:friend_name]
+
+		username = session[:username]
+		user_id1 = get_user_id(username)
+
+		username = params[:friend_name]
+		user_id2 = get_user_id(username)
+		
+		create_room(user_id1, user_id2, chat_room_name)
+
+		redirect('/chat')
+	end
+
+	post '/banuser' do
+		username = params[:friend_name]
+		user_id = get_user_id(username)
+		chat_id = get_chatrooms(user_id)
+
+		chat_id.each do |id|
+			id = id["id"]
+			delete_all_messages(id)
+		end
+
+		delete_from_users(username)
+		delete_message(user_id) #dubble?
+		delete_rooms(user_id)
+
+		redirect('/home')
 	end
 
 end
