@@ -68,8 +68,23 @@ nav{
     background-color: white;
     display: flex;
     flex-direction: column;
+    margin-left: 20px;
+    width: 300px;
+    height: 350px;
+    overflow-y:scroll;
 }
 
 .msgrow{
     color: black;
+}
+
+.namechat{
+    margin: 0;
+    margin-bottom: 2px;
+    color: black;
+    margin-left: 2px;
+}
+
+#marginfix{
+    margin-left: 20px;
 }

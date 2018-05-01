@@ -1,4 +1,6 @@
 
+- x = 0
 - messages.each do |hash|
     .msgrow
-        = hash["message"] 
+        <p class="namechat"> #{names[x][0]["username"]}: #{hash["message"]} </p>
+        - x += 1

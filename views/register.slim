@@ -5,8 +5,5 @@ div class="loginscreen"
         input type="password" placeholder="Re-type Password" name="pw2"
 
         input type="submit" value="Register"
-    -if session[:invalid_pass] == true
-        p class="red" The password did not match!
-        
-    -if session[:invaild_username] == true
-        p class="red" The username is already taken, try another one!
+    -if session[:invaild_reg] = true
+        p class="red" Something is not right! Try something new ;)

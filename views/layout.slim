@@ -16,5 +16,7 @@ html lang="en"
                 a href="/chat" Chats
                 a href="/friends" Users
                 a href="/profile/:username" = session[:username]
+                form action="/logout" method="post"
+                    input type="submit" value="LOGOUT"
 
         == yield

@@ -20,14 +20,24 @@ class App < Sinatra::Base
 		password2 = params[:pw2]
 
 		if password1 != password2
-			session[:invaild_pass] = true
+			session[:invaild_reg] = true
 			redirect('/register')
 		end 
+
+		if (password1.include? " ") || (password1.empty? == true)
+			session[:invaild_reg] = true
+			redirect('/register')
+		end
+
+		if (username.include? " ") || (username.empty? == true)
+			session[:invaild_reg] = true
+			redirect('/register')
+		end
 
 		username_compare = user_compare(username)
 		
 		if username_compare.empty? == false
-			session[:invaild_username] = true
+			session[:invaild_reg] = true
 			redirect('/register')
 		end
 
@@ -66,7 +76,9 @@ class App < Sinatra::Base
 		username = session[:username]
 
 		user_id = get_user_id(username)
+		p user_id
 		chatrooms_id_and_name = get_chatrooms(user_id)
+		p chatrooms_id_and_name
 
 		slim :chat, locals:{chatrooms_id_and_name:chatrooms_id_and_name}
 	end
@@ -75,16 +87,15 @@ class App < Sinatra::Base
 	get '/room/:chat_id/:room_name' do
 		@forMSG = params[:chat_id]
 		session[:chat_id] = @forMSG
-		p session[:chat_id]
-		p "here2"
 
 		session[:room_name] = params[:room_name]
-
 
 		slim :room
 	end   
 	
 	post '/room' do
+		#fixa auktorisering här
+
 		chat_id = session[:chat_id]
 		chat_id = chat_id.to_i
 		message = params[:message]
@@ -98,11 +109,19 @@ class App < Sinatra::Base
 	end
 
 	get '/messages' do
+		names = []
+		x = 0
 		chat_id = session[:chat_id]
 		chat_id = chat_id.to_i
 		messages = get_messages(chat_id)
 
-		slim :messages, layout: false, locals:{messages:messages}
+		messages.each do |id|
+			test1 = id["user_id"]
+			name = getUsername(test1)
+			names << name
+		end
+
+		slim :messages, layout: false, locals:{messages:messages ,names:names}
 	end 
 
 	get '/adminpowers' do
@@ -112,7 +131,7 @@ class App < Sinatra::Base
 	post '/adminpowers' do
 		pw = params[:adminpw]
 
-		if pw == "qvistisagod" #maybe fix later
+		if pw == "qvistisagod" #Inte särskilt bra... Får göra om senare om jag hinner 
 			username = session[:username]
 			updateUserValue(username)
 			redirect('/home')
@@ -176,6 +195,11 @@ class App < Sinatra::Base
 		delete_rooms(user_id)
 
 		redirect('/home')
+	end
+
+	post '/logout' do
+		session.destroy
+		redirect '/'
 	end
 
 end
