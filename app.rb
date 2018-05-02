@@ -7,6 +7,7 @@ class App < Sinatra::Base
 
 	get '/' do
 		session[:logged_in] = false
+		session[:invaild_reg] = false
 		slim :index
 	end
 
@@ -24,7 +25,7 @@ class App < Sinatra::Base
 			redirect('/register')
 		end 
 
-		if (password1.include? " ") || (password1.empty? == true)
+		if password1.empty? == true
 			session[:invaild_reg] = true
 			redirect('/register')
 		end
@@ -76,15 +77,27 @@ class App < Sinatra::Base
 		username = session[:username]
 
 		user_id = get_user_id(username)
-		p user_id
 		chatrooms_id_and_name = get_chatrooms(user_id)
-		p chatrooms_id_and_name
 
 		slim :chat, locals:{chatrooms_id_and_name:chatrooms_id_and_name}
 	end
 
 
 	get '/room/:chat_id/:room_name' do
+		chat_id = params[:chat_id].to_i
+		ids = get_user_ids_from_chatroomid(chat_id)
+		user_1 = ids[0]["user_1"]
+		user_2 = ids[0]["user_2"]
+
+		username = session[:username]
+		current_user = get_user_id(username)
+
+		if ( current_user == user_1 ) || ( current_user == user_2 )
+			#har detta för att fixk det att funka med detta. Funka inte med tidigare metod.
+		else
+			redirect('/')
+		end
+
 		@forMSG = params[:chat_id]
 		session[:chat_id] = @forMSG
 
@@ -94,8 +107,6 @@ class App < Sinatra::Base
 	end   
 	
 	post '/room' do
-		#fixa auktorisering här
-
 		chat_id = session[:chat_id]
 		chat_id = chat_id.to_i
 		message = params[:message]
@@ -141,7 +152,7 @@ class App < Sinatra::Base
 
 	end
 
-	get '/friends' do
+	get '/users' do
 		all = getAllUsers()
 		user = params['user']
 
@@ -149,31 +160,38 @@ class App < Sinatra::Base
 			@result = searchUser(user)
 		end
 
-		slim :friends, locals: {all:all}
+		slim :users, locals: {all:all}
 	end
 
-	post '/friends' do
+	post '/users' do
 		user = params["user"]
 
-		redirect "/friends?user=#{user}"
+		redirect "/users?user=#{user}"
 	end
 
-	get '/friend/:name' do
-		friend_name = params[:name]
+	get '/user/:name' do
+		user_name = params[:name]
 		username = session[:username]
 		@user_value = getUserValue(username)
 
-		slim :friend, locals: {friend_name:friend_name}
+		slim :user, locals: {user_name:user_name}
 	end
 
 	post '/startchat' do
-		chat_room_name = session[:username] + " & " + params[:friend_name]
+		chat_room_name = session[:username] + " & " + params[:user_name]
 
 		username = session[:username]
 		user_id1 = get_user_id(username)
 
-		username = params[:friend_name]
+		username = params[:user_name]
 		user_id2 = get_user_id(username)
+
+		exists1 = check_for_chat1(user_id1, user_id2) # Gör detta två gånger för i databasen kan det stå på två olika sätt.
+		exists2 = check_for_chat2(user_id2, user_id1)
+
+		if ( exists1.empty? == false ) || ( exists2.empty? == false )
+			redirect('/chat')
+		end
 		
 		create_room(user_id1, user_id2, chat_room_name)
 
@@ -181,7 +199,7 @@ class App < Sinatra::Base
 	end
 
 	post '/banuser' do
-		username = params[:friend_name]
+		username = params[:user_name]
 		user_id = get_user_id(username)
 		chat_id = get_chatrooms(user_id)
 
@@ -191,7 +209,7 @@ class App < Sinatra::Base
 		end
 
 		delete_from_users(username)
-		delete_message(user_id) #dubble?
+		delete_message(user_id) #dubble? gör det för säkerhets skull och för att det funkar atm :)
 		delete_rooms(user_id)
 
 		redirect('/home')
@@ -200,6 +218,10 @@ class App < Sinatra::Base
 	post '/logout' do
 		session.destroy
 		redirect '/'
+	end
+
+	get '/profile/:username' do
+		slim :profile
 	end
 
 end

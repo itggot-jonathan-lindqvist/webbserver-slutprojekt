@@ -97,7 +97,7 @@ module TodoDB
 
     def delete_all_messages(id)
         db = db_connect()
-        db.execute("DELETE FROM Message WHERE chatroom_id =?", [user_id])
+        db.execute("DELETE FROM Message WHERE chatroom_id =?", [id])
     end
 
     def getUsername(test1)
@@ -105,5 +105,25 @@ module TodoDB
         name = db.execute("SELECT username FROM Users WHERE id=?", [test1])
         return name
     end
+
+    def check_for_chat1(user_id1, user_id2)
+        db = db_connect()
+        result = db.execute("SELECT * FROM Chatroom WHERE user_1 =? AND user_2 =?", [user_id1, user_id2])
+        return result
+    end
+
+    def check_for_chat2(user_id2, user_id1)
+        db = db_connect()
+        result = db.execute("SELECT * FROM Chatroom WHERE user_1 =? AND user_2 =?", [user_id2, user_id1])
+        return result
+    end
+
+    def get_user_ids_from_chatroomid(chat_id)
+        db = db_connect()
+        ids = db.execute("SELECT user_1, user_2 FROM Chatroom WHERE id =?", [chat_id])
+        return ids
+    end
+
+
 
 end

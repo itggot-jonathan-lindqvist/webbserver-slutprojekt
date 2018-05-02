@@ -1,14 +1,14 @@
-h2 #{friend_name}
+h2 #{user_name}
 
 .sidebyside
     .users
         h3 Start shitchatting
         form action="/startchat" method="POST"
-            input type="hidden" value="#{friend_name}" name="friend_name"
+            input type="hidden" value="#{user_name}" name="user_name"
             input type="submit" value="Start Chat"
     - if @user_value == 2
         .users
             h3 Ban user
             form action="/banuser" method="POST"
-                input type="hidden" value="#{friend_name}" name="friend_name"
+                input type="hidden" value="#{user_name}" name="user_name"
                 input type="submit" value="Ban"

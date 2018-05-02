@@ -8,10 +8,10 @@ div class="sidebyside"
     div class="users"
         h2 All users:
         - all.each do |hash|
-            a href="/friend/#{hash["username"]}" #{hash["username"]}
+            a href="/user/#{hash["username"]}" #{hash["username"]}
 
     - if @result != nil
         div class="users"
             h2 Search result:
             - @result.each do |hash|
-                a href="/friend/#{hash["username"]}" #{hash["username"]}
+                a href="/user/#{hash["username"]}" #{hash["username"]}

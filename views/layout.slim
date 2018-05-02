@@ -14,8 +14,8 @@ html lang="en"
             nav
                 a href="/home" Home
                 a href="/chat" Chats
-                a href="/friends" Users
-                a href="/profile/:username" = session[:username]
+                a href="/users" Users
+                a href="/profile/#{session[:username]}" = session[:username]
                 form action="/logout" method="post"
                     input type="submit" value="LOGOUT"
 

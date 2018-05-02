@@ -5,5 +5,5 @@ div class="loginscreen"
         input type="password" placeholder="Re-type Password" name="pw2"
 
         input type="submit" value="Register"
-    -if session[:invaild_reg] = true
+    -if session[:invaild_reg] == true
         p class="red" Something is not right! Try something new ;)
