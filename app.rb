@@ -23,19 +23,13 @@ class App < Sinatra::Base
 		if username.length > 12
 			session[:invaild_reg] = true
 			redirect('/register')
-		end
-
-		if password1 != password2
+		elsif password1 != password2
 			session[:invaild_reg] = true
 			redirect('/register')
-		end 
-
-		if password1.empty? == true
+		elsif password1.empty? == true
 			session[:invaild_reg] = true
 			redirect('/register')
-		end
-
-		if (username.include? " ") || (username.empty? == true)
+		elsif (username.include? " ") || (username.empty? == true)
 			session[:invaild_reg] = true
 			redirect('/register')
 		end
@@ -119,8 +113,7 @@ class App < Sinatra::Base
 			redirect('/')
 		end
 
-		@forMSG = params[:chat_id]
-		session[:chat_id] = @forMSG
+		session[:chat_id] = params[:chat_id]
 
 		session[:room_name] = params[:room_name]
 
@@ -181,8 +174,6 @@ class App < Sinatra::Base
 		if crypt != password
 			redirect '/adminpowers'
 		end
-
-
 
 		if pw == "qvistisagod" #Inte särskilt bra... Får göra om senare om jag hinner 
 			username = session[:username]
