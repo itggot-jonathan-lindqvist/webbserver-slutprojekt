@@ -20,6 +20,11 @@ class App < Sinatra::Base
 		password1 = params[:pw1]
 		password2 = params[:pw2]
 
+		if username.length > 12
+			session[:invaild_reg] = true
+			redirect('/register')
+		end
+
 		if password1 != password2
 			session[:invaild_reg] = true
 			redirect('/register')
@@ -31,6 +36,13 @@ class App < Sinatra::Base
 		end
 
 		if (username.include? " ") || (username.empty? == true)
+			session[:invaild_reg] = true
+			redirect('/register')
+		end
+
+		regexp = /^[A-Za-z0-9]*$/
+
+		if username.match(regexp) == nil
 			session[:invaild_reg] = true
 			redirect('/register')
 		end
@@ -54,6 +66,15 @@ class App < Sinatra::Base
 		password = params[:password]
 
 		session[:username] = username
+
+		if username.empty? == true
+			redirect('/')
+		end
+
+		username_compare = user_compare(username)
+		if username_compare.empty? == true
+			redirect('/register')
+		end
 
 		check = get_password_for_user(username)
 		check = check[1]
@@ -141,6 +162,27 @@ class App < Sinatra::Base
 
 	post '/adminpowers' do
 		pw = params[:adminpw]
+		username = params[:username]
+		password = params[:password]
+
+		if username.empty? == true
+			redirect('/adminpowers')
+		end
+
+		username_compare = user_compare(username)
+		if username_compare.empty? == true
+			redirect('/adminpowers')
+		end
+
+		check = get_password_for_user(username)
+		check = check[1]
+		crypt = BCrypt::Password.new(check)
+
+		if crypt != password
+			redirect '/adminpowers'
+		end
+
+
 
 		if pw == "qvistisagod" #Inte särskilt bra... Får göra om senare om jag hinner 
 			username = session[:username]
